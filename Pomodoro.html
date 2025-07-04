@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ポモドーロタイマー</title>
+  </head>
+  <body>
+    <button id="startBtn">スタート</button>
+    <button id="resetBtn">リセット</button>
+    <p id="output">25:00</p>
+    <audio id="endSound" src="成功音.mp3"></audio>
+    <script>
+      //初期設定
+      let timeLeft = 1500; // 25分
+      let timerId;
+      let isBreak = false;
+
+      const btn = document.getElementById("startBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const output = document.getElementById("output");
+      const endSound = document.getElementById("endSound");
+
+      //ボタンスタート
+      btn.addEventListener("click", () => {
+        clearInterval(timerId);
+        isBreak = false; //25分タイムからスタート
+
+        //タイマーがスタートするとき
+        function startTimer() {
+          timerId = setInterval(() => {
+            timeLeft--;
+            const min = Math.floor(timeLeft / 60);
+            const sec = timeLeft % 60;
+            output.textContent = `${String(min).padStart(2, "0")}:${String(
+              sec
+            ).padStart(2, "0")}`;
+
+            //タイマーが0になったとき
+            if (timeLeft <= 0) {
+              clearInterval(timerId);
+              endSound.play();
+
+              // 5分の休憩タイム
+              if (!isBreak) {
+                isBreak = true;
+                timeLeft = 300;
+                output.textContent = "休憩タイム！";
+                startTimer();
+              } else {
+                isBreak = false;
+                output.textContent = "お疲れ様！";
+              }
+            }
+          }, 1000);
+        }
+        startTimer();
+      });
+      //リセットボタン
+      resetBtn.addEventListener("click", () => {
+        clearInterval(timerId);
+        isBreak = false;
+        timeLeft = 1500;
+        output.textContent = "25:00";
+      });
+    </script>
+  </body>
+</html>
